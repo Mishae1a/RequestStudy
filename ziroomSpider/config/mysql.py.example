@@ -1,0 +1,9 @@
+config = {
+    'host': '127.0.0.1',
+    'user': 'test',
+    'password': 'test',
+    'port': 3306,
+    'database': 'test',
+    'charset': 'utf8',
+    # 'cursor_class' : mysql.connector.cursor.MySQLCursorDict,
+}
