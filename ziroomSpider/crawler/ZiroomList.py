@@ -4,20 +4,18 @@ import lxml
 import re
 import time
 
-class ziroomList(object):
+class ZiroomList(object):
     def __init__(self, keyword):
         self.keyword = keyword
 
     def getDataList(self):
         bsObj = self.getBsObj()
+        print(bsObj.find(class_="t_newlistbox"))
+        return []
         if bsObj == False:
             self.dataList = False
             return self.dataList
-        rawList = bsObj.find_all(class_="cfix")
-        if rawList == [] or rawList == None:
-            self.dataList = []
-            return self.dataList
-
+        
         return self.dataList
     
     def getBsObj(self):
@@ -37,18 +35,6 @@ class ziroomList(object):
             # }
         )
         print('[resp] [code %s]' % (resp.status_code))
-        exit()
-        if resp.status_code == 200:
-            r = resp.json()
-            self.hasMore = r['hasMore']
-            return BeautifulSoup(r['html'], 'lxml')
-        else:
-            # 触发重试机制
-            if self.retry > 3:
-                self.hasMore = False
-                return False
-            else:
-                self.retry += 1
-                time.sleep(0.1)
-                return self.getBsObj()
+        r = resp.text
+        return BeautifulSoup(r, 'lxml')
 
