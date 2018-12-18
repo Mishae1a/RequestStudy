@@ -62,12 +62,15 @@ class ZiroomList(object):
                 tags += tagItem.string + ','
             
             # unit
-            unit = item.find(class_ = "priceDetail").find(class_ = "gray-6").string.strip(' \t\n\r')
+            try:
+                unit = item.find(class_ = "priceDetail").find(class_ = "gray-6").string.strip(' \t\n\r')
+            except BaseException as e:
+                unit = ''
             
             # price
             price = 0
             house = {
-                'zid' : zid,
+                'zid' : int(zid),
                 'house_name' : house_name,
                 'detail' : detail,
                 'area' : area,
