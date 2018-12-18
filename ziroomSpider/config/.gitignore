@@ -1,4 +1,4 @@
 mysql.py
 ocr.py
 sms.py
-__pycache__
+__pycache__/*
