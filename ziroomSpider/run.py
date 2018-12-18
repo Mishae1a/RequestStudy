@@ -4,6 +4,9 @@ import time
 import crawler.ZiroomList as ZiroomList
 import threading
 import queue
+import spiderUnit.Sms as Sms
+import config.sms as smsConfig
+from datetime import datetime
 
 # 定义计数变量
 exitFlag = 0
@@ -88,27 +91,27 @@ while i <= threadNum:
 i = 1
 keywordList = [
     '三丰里',
-    # '天福园',
-    # '芳草地西街',
-    # '芳草地',
-    # '雅宝里',
-    # '芳草苑',
-    # '日坛北路',
-    # '吉祥里',
-    # '东大桥路',
-    # '东大桥东里',
-    # '向军南里',
-    # '关东店北街',
-    # '东草园',
-    # '西草园',
-    # '吉庆里',
-    # '怡景园',
-    # '建国里',
-    # '朝外市场街',
-    # '工人体育场',
-    # '日坛',
-    # '农丰里',
-    # '光华里',
+    '天福园',
+    '芳草地西街',
+    '芳草地',
+    '雅宝里',
+    '芳草苑',
+    '日坛北路',
+    '吉祥里',
+    '东大桥路',
+    '东大桥东里',
+    '向军南里',
+    '关东店北街',
+    '东草园',
+    '西草园',
+    '吉庆里',
+    '怡景园',
+    '建国里',
+    '朝外市场街',
+    '工人体育场',
+    '日坛',
+    '农丰里',
+    '光华里',
 ]
 queueLock.acquire()
 for keyword in keywordList:
@@ -128,6 +131,9 @@ for t in threads:
 print ("销毁原型机")
 
 print ("扫描结果：%s" % (hasInsert))
-# if (hasInsert):
-
+if (hasInsert):
+    smsObj = Sms.Sms()
+    now = datetime.now()
+    signTime = now.strftime(r"%m%d%H")
+    smsObj.sendMsg(smsConfig.config['mobile'], '时间：' + signTime + '，有新提醒')
 
