@@ -10,13 +10,33 @@ class ZiroomList(object):
 
     def getDataList(self):
         bsObj = self.getBsObj()
-        print(bsObj.find(class_="t_newlistbox"))
-        return []
         if bsObj == False:
             self.dataList = False
             return self.dataList
-        
-        return self.dataList
+        container = bsObj.find(class_="t_newlistbox")
+        if container == None:
+            self.dataList = []
+            return self.dataList
+        # 判断数据html中是否有未找到提示
+        nomsgContainer = container.find(class_="nomsg")
+        if nomsgContainer != None:
+            self.dataList = []
+            return self.dataList
+        # 获取数据进行处理
+        houseContainer = container.find(id="houseList")
+        if houseContainer == None:
+            self.dataList = []
+            return self.dataList
+        houseList = houseContainer.find_all('li')
+        result = []
+        for houseSoup in houseList:
+            # 获取单个房子数据
+
+            house = {}
+            result.append(house)
+
+        self.dataList = result
+        return result
     
     def getBsObj(self):
         # 获取sku的网页信息
