@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import lxml
 import re
 import time
+import json
+import spiderUnit.BaiduOcr as BaiduOcr
 
 class ZiroomList(object):
     def __init__(self, keyword):
@@ -35,9 +37,8 @@ class ZiroomList(object):
             houseHref = item.find('a').attrs['href']
             zid = re.findall(r"vr/(.+).html", houseHref)
             zid = int(zid[0])
-            # name
-            houseName = item.find('h3').find('a').string
-            print(houseName)
+            # house_name
+            house_name = item.find('h3').find('a').string
             # detail  先不截取了
             detailObj = item.find(class_ = "detail")
             detail = detailObj.prettify()
@@ -60,19 +61,55 @@ class ZiroomList(object):
             for tagItem in tagsObj:
                 tags += tagItem.string + ','
             
-
+            # unit
+            unit = item.find(class_ = "priceDetail").find(class_ = "gray-6").string.strip(' \t\n\r')
             
-            print(tags)
-            
-            return []
-
+            # price
+            price = 0
             house = {
-
+                'zid' : zid,
+                'house_name' : house_name,
+                'detail' : detail,
+                'area' : area,
+                'floor' : floor,
+                'tags' : tags,
+                'unit' : unit,
+                'price' : price,
             }
             result.append(house)
+        # 处理价格信息 先获取本页面的价格信息
+        if result == []:
+            self.dataList = []
+            return []
+        # var ROOM_PRICE = {"image":""};
+        try:
+            priceInfo = re.findall(r"var ROOM_PRICE = (.+);", bsObj.prettify())
+            priceInfo = json.loads(priceInfo[0])
+            priceList = self.getZiroomPriceList(priceInfo)
+            i = 0
+            for house in result:
+                house['price'] = priceList[i]
+                i += 1
+        except BaseException as e:
+            # 啥都不做
+            pass
 
         self.dataList = result
         return result
+
+    # 获取自如的价格列表
+    def getZiroomPriceList(self, priceInfo):
+        if (priceInfo == None or priceInfo == False or priceInfo == {} or priceInfo['image'] == ''):
+            return []
+        ocr = BaiduOcr.BaiduOcr()
+        pictureInfo = ocr.getData('http:' + priceInfo['image'])
+        priceList = []
+        for offset in priceInfo['offset']:
+            itemPrice = ''
+            for n in offset:
+                itemPrice += pictureInfo[n]
+            priceList.append(itemPrice)
+        return priceList
     
     def getBsObj(self):
         # 获取sku的网页信息
