@@ -29,10 +29,46 @@ class ZiroomList(object):
             return self.dataList
         houseList = houseContainer.find_all('li')
         result = []
-        for houseSoup in houseList:
+        for item in houseList:
             # 获取单个房子数据
+            # zid
+            houseHref = item.find('a').attrs['href']
+            zid = re.findall(r"vr/(.+).html", houseHref)
+            zid = int(zid[0])
+            # name
+            houseName = item.find('h3').find('a').string
+            print(houseName)
+            # detail  先不截取了
+            detailObj = item.find(class_ = "detail")
+            detail = detailObj.prettify()
+            # area
+            try:
+                area = re.findall(r"(.+)㎡", detailObj.prettify())
+                area = area[0].strip(' \t\n\r')
+            except BaseException as e:
+                area = 0
+            # floor
+            try:
+                floor = re.findall(r"(.+)层", detailObj.prettify())
+                floor = floor[0].strip(' \t\n\r')
+            except BaseException as e:
+                floor = 0
+            
+            # tags
+            tagsObj = item.find(class_ = "room_tags").find_all('span')
+            tags = ""
+            for tagItem in tagsObj:
+                tags += tagItem.string + ','
+            
 
-            house = {}
+            
+            print(tags)
+            
+            return []
+
+            house = {
+
+            }
             result.append(house)
 
         self.dataList = result
