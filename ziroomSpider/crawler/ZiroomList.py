@@ -56,10 +56,13 @@ class ZiroomList(object):
                 floor = 0
             
             # tags
-            tagsObj = item.find(class_ = "room_tags").find_all('span')
-            tags = ""
-            for tagItem in tagsObj:
-                tags += tagItem.string + ','
+            try:
+                tagsObj = item.find(class_ = "room_tags").find_all('span')
+                tags = ""
+                for tagItem in tagsObj:
+                    tags += tagItem.string + ','
+            except BaseException as e:
+                tags = ""
             
             # unit
             try:

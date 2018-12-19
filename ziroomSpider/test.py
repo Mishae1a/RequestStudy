@@ -3,9 +3,11 @@ import config.mysql as mysqlConfig
 import crawler.ZiroomList as ZiroomList
 import queue
 import spiderUnit.Sms as Sms
+import config.sms as smsConfig
 
 smsObj = Sms.Sms()
-smsObj.sendMsg('13655491631', '您的验证码是：941012，请不要把验证码泄露给其他人，如非本人操作，可不用理会')
+smsObj.sendMsg(smsConfig.config['mobile'], '您的验证码是：941012，请不要把验证码泄露给其他人，如非本人操作，可不用理会')
+
 
 # def getListData(data):
 #     # 分类爬取
