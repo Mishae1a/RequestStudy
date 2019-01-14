@@ -60,7 +60,7 @@ def getListData(data):
                 conn.commit()
                 
                 # 有2600以下的新房子 发送短信通知
-                if (float(house['price']) < 2600 && house['unit'] == '(每月)'):
+                if (float(house['price']) < 2600 and house['unit'] == '(每月)'):
                     hasInsert = True
             else:
                 # 更新原有的
