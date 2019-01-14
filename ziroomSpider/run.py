@@ -59,8 +59,8 @@ def getListData(data):
                     )
                 conn.commit()
                 
-                # 有3000以下的新房子 发送短信通知
-                if (float(house['price']) < 3000):
+                # 有2600以下的新房子 发送短信通知
+                if (float(house['price']) < 2600 && house['unit'] == '(每月)'):
                     hasInsert = True
             else:
                 # 更新原有的
@@ -130,10 +130,10 @@ for t in threads:
     t.join()
 print ("销毁原型机")
 
-print ("扫描结果：%s" % (hasInsert))
+now = datetime.now()
+signTime = now.strftime(r"%m%d%H")
+print ("%s 扫描结果：%s" % (signTime, hasInsert))
 if (hasInsert):
     smsObj = Sms.Sms()
-    now = datetime.now()
-    signTime = now.strftime(r"%m%d%H")
     smsObj.sendMsg(smsConfig.config['mobile'], '时间：' + signTime + '，有新提醒')
 
