@@ -15,32 +15,34 @@ class ZiroomList(object):
         if bsObj == False:
             self.dataList = False
             return self.dataList
-        container = bsObj.find(class_="t_newlistbox")
+        container = bsObj.find(class_="Z_list-box")
         if container == None:
             self.dataList = []
             return self.dataList
-        # 判断数据html中是否有未找到提示
-        nomsgContainer = container.find(class_="nomsg")
-        if nomsgContainer != None:
-            self.dataList = []
-            return self.dataList
-        # 获取数据进行处理
-        houseContainer = container.find(id="houseList")
-        if houseContainer == None:
-            self.dataList = []
-            return self.dataList
-        houseList = houseContainer.find_all('li')
+        # # 判断数据html中是否有未找到提示
+        # nomsgContainer = container.find(class_="nomsg")
+        # if nomsgContainer != None:
+        #     self.dataList = []
+        #     return self.dataList
+        # # 获取数据进行处理
+        # houseContainer = container.find(id="houseList")
+        # if houseContainer == None:
+        #     self.dataList = []
+        #     return self.dataList
+        houseContainer = container
+        houseList = houseContainer.find_all(class_="item")
+        amountResult = {}
         result = []
         for item in houseList:
             # 获取单个房子数据
             # zid
             houseHref = item.find('a').attrs['href']
-            zid = re.findall(r"vr/(.+).html", houseHref)
+            zid = re.findall(r"x/(.+).html", houseHref)
             zid = int(zid[0])
             # house_name
-            house_name = item.find('h3').find('a').string
+            house_name = item.find('h5').find('a').string
             # detail  先不截取了
-            detailObj = item.find(class_ = "detail")
+            detailObj = item.find(class_ = "desc")
             detail = detailObj.prettify()
             # area
             try:
@@ -57,7 +59,7 @@ class ZiroomList(object):
             
             # tags
             try:
-                tagsObj = item.find(class_ = "room_tags").find_all('span')
+                tagsObj = item.find(class_ = "tag").find_all('span')
                 tags = ""
                 for tagItem in tagsObj:
                     tags += tagItem.string + ','
@@ -66,9 +68,27 @@ class ZiroomList(object):
             
             # unit
             try:
-                unit = item.find(class_ = "priceDetail").find(class_ = "gray-6").string.strip(' \t\n\r')
+                unit = item.find(class_ = "unit").string
             except BaseException as e:
                 unit = ''
+
+            # 金额处理 每个字母21.4px
+            # 取金额图片
+            url = re.findall(r"url\(\/\/(.+)\)", item.prettify())
+            url = url[0]
+            priceList = []
+            if url in amountResult:
+                priceList = amountResult[url]
+            else:
+                # try:
+                priceList = self.getZiroomPriceList(url)
+                amountResult[url] = priceList
+                # except BaseException as e:
+                #     # 啥都不做
+                #     pass
+                # amountList = 
+            
+            print(amountResult)
             
             # price
             price = 0
@@ -82,40 +102,28 @@ class ZiroomList(object):
                 'unit' : unit,
                 'price' : price,
             }
+            # print(house)
             result.append(house)
-        # 处理价格信息 先获取本页面的价格信息
-        if result == []:
-            self.dataList = []
-            return []
-        # var ROOM_PRICE = {"image":""};
-        try:
-            priceInfo = re.findall(r"var ROOM_PRICE = (.+);", bsObj.prettify())
-            priceInfo = json.loads(priceInfo[0])
-            priceList = self.getZiroomPriceList(priceInfo)
-            i = 0
-            for house in result:
-                house['price'] = priceList[i]
-                i += 1
-        except BaseException as e:
-            # 啥都不做
-            pass
+        
 
         self.dataList = result
         return result
 
     # 获取自如的价格列表
     def getZiroomPriceList(self, priceInfo):
-        if (priceInfo == None or priceInfo == False or priceInfo == {} or priceInfo['image'] == ''):
-            return []
+        # if (priceInfo == None or priceInfo == False or priceInfo == {} or priceInfo['image'] == ''):
+        #     return []
         ocr = BaiduOcr.BaiduOcr()
-        pictureInfo = ocr.getData('http:' + priceInfo['image'])
-        priceList = []
-        for offset in priceInfo['offset']:
-            itemPrice = ''
-            for n in offset:
-                itemPrice += pictureInfo[n]
-            priceList.append(itemPrice)
-        return priceList
+        print('http://' + priceInfo)
+        pictureInfo = ocr.getData('http://' + priceInfo)
+        print(pictureInfo)
+        # priceList = []
+        # for offset in priceInfo['offset']:
+        #     itemPrice = ''
+        #     for n in offset:
+        #         itemPrice += pictureInfo[n]
+        #     priceList.append(itemPrice)
+        return pictureInfo
     
     def getBsObj(self):
         # 获取sku的网页信息
@@ -135,5 +143,7 @@ class ZiroomList(object):
         )
         print('[resp] [code %s]' % (resp.status_code))
         r = resp.text
+        # print(r)
+        # exit()
         return BeautifulSoup(r, 'lxml')
 
