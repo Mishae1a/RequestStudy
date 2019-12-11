@@ -22,17 +22,17 @@ def getCoupon(name, headers, eid):
         # 判断当前时间
         # time.sleep(0.05)
         t = (int)(time.time())
-        if t < 1573646385:
+        if t < 1576065585 :
             # 19:59:50
             print("%s: %s [%s]" % (name, time.ctime(time.time()), 'waiting'))
             continue
-        if t > 1573646405:
+        if t > 1576065605:
             # 20:00:10
             print("%s: %s [%s]" % (name, time.ctime(time.time()), 'end'))
             return
         resp = requests.post('https://hsc.jd.com/couponObtain/obtain',
             data = {
-                'couponCode' : '0117251ef0b44fac885f59f3497d4095',
+                'couponCode' : 'b8a3581b2d1f447d8184504a366ebaa9',
                 'p' : '2',
                 'pageClickKey' : '-1',
                 'userArea' : '-1',

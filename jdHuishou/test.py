@@ -6,14 +6,14 @@ import time
 exitFlag = 0
 
 name = 'test'
-headers = cookieConfig.config['175']
+headers = cookieConfig.config['136']
 resp = requests.post('https://hsc.jd.com/couponObtain/obtain',
     data = {
-        'couponCode' : '0117251ef0b44fac885f59f3497d4095',
+        'couponCode' : 'b8a3581b2d1f447d8184504a366ebaa9',
         'p' : '2',
         'pageClickKey' : '-1',
         'userArea' : '-1',
-        'eid' : 'OJIHHJS4A3CEZRTHIS2ZC2OYM2OXGJTCUJYS5SMP7U4FYUPQUVEA2R7AXBWHRQGUFTQPOK3XSGZDWPTKXYGYJ6CVVA',
+        'eid' : 'FZVIO7FBUDNUVGTEMH5TKAFP5QJ4PUMGWUQ6GHMTHVHCPES6LPPZWAD6JTZ4ZSDMTOWXPSEFYRFCHRNXPLW4GUWKL4',
     },
     headers = headers
 )
