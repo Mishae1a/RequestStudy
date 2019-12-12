@@ -60,16 +60,24 @@ class LianjiaList(object):
             trade_time = item.find(class_="address").find(class_="dealDate").string
             # total_price
             # total_unit
-            total_price_origin = item.find(class_="totalPrice")
-            total_price = total_price_origin.find("span", class_="number").string
-            total_unit = re.findall(r"</span>\n\s*(.+)\n</div>", total_price_origin.prettify())
-            total_unit = total_unit[0]
+            try:
+                total_price_origin = item.find(class_="totalPrice")
+                total_price = total_price_origin.find("span", class_="number").string
+                total_unit = re.findall(r"</span>\n\s*(.+)\n</div>", total_price_origin.prettify())
+                total_unit = total_unit[0]
+            except BaseException as e:
+                total_price = ''
+                total_unit = ''
             # unit_price
             # unit_unit
-            unit_price_origin = item.find(class_="unitPrice")
-            unit_price = unit_price_origin.find("span", class_="number").string
-            unit_unit = re.findall(r"</span>\n\s*(.+)\n</div>", unit_price_origin.prettify())
-            unit_unit = unit_unit[0]
+            try:
+                unit_price_origin = item.find(class_="unitPrice")
+                unit_price = unit_price_origin.find("span", class_="number").string
+                unit_unit = re.findall(r"</span>\n\s*(.+)\n</div>", unit_price_origin.prettify())
+                unit_unit = unit_unit[0]
+            except BaseException as e:
+                unit_price = ''
+                unit_unit = ''
 
             house = {
                 'lj_id' : lj_id,
