@@ -1,0 +1,86 @@
+import crawler.LianjiaList as LianjiaList
+import config.pageConf as pageConf
+import mysql.connector
+import config.mysql as mysqlConfig
+
+# 获取一个实际分片后的url的数据
+def getListData(page):
+    # 分类爬取
+    conn = mysql.connector.connect(**mysqlConfig.config)
+    cursor = conn.cursor(dictionary=True)
+    pg = 1
+    while 1:
+        try:
+            lianjiaObj = LianjiaList.LianjiaList()
+            houseList = lianjiaObj.getUrlData(page + 'pg' + str(pg))
+            # print(page + 'pg' + str(pg))
+            if (houseList['code'] != 0):
+                print(page + ' 页面请求失败' + str(houseList['code']) + houseList['msg'])
+                return
+            for house in houseList['data']:
+                # Read a single record
+                sql = "select * from lj_transaction WHERE lj_id = %s LIMIT 1"
+                print(house)
+                cursor.execute(sql, (house['lj_id'],))
+                result = cursor.fetchone()
+                if (result == None):
+                    cursor.execute("INSERT INTO lj_transaction (lj_id, title, trade_time, total_price, total_unit, unit_price, unit_unit, status) "
+                            + " VALUES (%(lj_id)s, %(title)s, %(trade_time)s, %(total_price)s, %(total_unit)s, %(unit_price)s, %(unit_unit)s, %(status)s)",
+                            house
+                        )
+                    conn.commit()
+                else:
+                    # 更新原有的
+                    # cursor.execute("UPDATE lj_transaction SET title = %(title)s, trade_time = %(trade_time)s, total_price = %(total_price)s," 
+                    #     +" total_unit = %(total_unit)s, unit_price = %(unit_price)s, unit_unit = %(unit_unit)s, status = %(status)s, keyword = %(keyword)s WHERE lj_id=%(lj_id)s", house)
+                    # conn.commit()
+                    # 列表页似乎也不用更新
+                    pass
+            # 如果本页数据不为空 继续抓下一页
+            if (len(houseList['data']) == 0):
+                break
+            else:
+                pg += 1
+        except BaseException as e:
+            print('[error] [%s] [%s]' % (page, e))
+
+    cursor.close()
+    conn.close()
+    pass
+
+
+# 调度方法
+# 这里决定是单线程运行 还是分配给多线程并发运行
+def dispatch(page):
+    print(page)
+    getListData(page)
+
+
+
+# 实际的run方法
+# 将预定义列表 通过判断大列表数量 如果数量大于100页 则分片调度 否则则正常调度请求
+for p in pageConf.listConf:
+    lianjiaObj = LianjiaList.LianjiaList()
+    total = lianjiaObj.getUrlTotal(p)
+    # 先取总数量 如果总数量超过了3000条 则分片重新请求
+    if total == False:
+        print(p + ' 请求失败！')
+    if total > 3000:
+        for area in pageConf.areaList:
+            realPage = p + '' +  area
+            # 这里应该调用分配逻辑
+            dispatch(realPage)
+    else:
+        dispatch(p)
+            
+
+
+    
+
+
+
+
+
+# lianjiaObj = LianjiaList.LianjiaList()
+# r = lianjiaObj.getUrlData('https://bj.lianjia.com/chengjiao/tiantongyuan1/ba100ea110/')
+# print(r)
