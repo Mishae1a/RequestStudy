@@ -41,6 +41,8 @@ def getListData(page):
             break
         else:
             pg += 1
+        if (pg >= 100):
+            break
         # except BaseException as e:
         #     print('[error] [%s] [%s]' % (page, e))
 
