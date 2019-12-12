@@ -73,11 +73,11 @@ class LianjiaList(object):
 
             house = {
                 'lj_id' : lj_id,
-                'title' : title,
-                'trade_time' : trade_time,
-                'total_price' : total_price,
+                'title' : str(title),
+                'trade_time' : str(trade_time),
+                'total_price' : str(total_price),
                 'total_unit' : total_unit,
-                'unit_price' : unit_price,
+                'unit_price' : str(unit_price),
                 'unit_unit' : unit_unit,
                 'status' : 1,
             }
