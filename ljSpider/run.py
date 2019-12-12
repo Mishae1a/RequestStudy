@@ -13,6 +13,8 @@ if (len(args) == 1):
 # wc py竟然没switch
 if (args[1] == 'list'):
     import controller.runList
+elif(args[1] == 'detail'):
+    import controller.runDetail
 else:
     print('参数错误 请运行 list detail')
 
