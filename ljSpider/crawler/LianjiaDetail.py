@@ -4,6 +4,7 @@ import lxml
 import re
 import time
 import json
+import libs.proxyPool as proxyPool
 
 class LianjiaDetail(object):
     def __init__(self):
@@ -123,25 +124,55 @@ class LianjiaDetail(object):
         }
         return houseDetail
 
+    def runRequest(self, url):
+        # 保证一定可以成功 进行50次proxy获取
+        proxyIndex = 0
+        while proxyIndex < 50:
+            retry_count = 5
+            proxy = proxyPool.get_proxy().get("proxy")
+            while retry_count > 0:
+                try:
+                    proxies = {
+                        "http": "http://{}".format(proxy)
+                    }
+                    # print(proxies)
+                    # resp = requests.get('http://www.zsfucai.cn/admin/privilege.php?act=login&operator=rd',
+                    #     proxies=proxies,
+                    #     timeout=10
+                    #     )
+                    resp = requests.get(
+                        url,
+                        params={
+                        },
+                        headers={
+                                'User-Agent':'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+                                'Accept':'text/html;q=0.9,*/*;q=0.8',
+                                'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+                            },
+                        proxies=proxies,
+                        timeout=30
+                    )
+                    # html = requests.get('https://www.baidu.com', proxies=proxies)
+                    # 使用代理访问
+                    # print(resp)
+                    # exit()
+                    return resp
+                except Exception:
+                    retry_count -= 1
+            proxyIndex += 1
+            # print(proxyIndex)
+            # 出错5次, 删除代理池中代理
+            proxyPool.delete_proxy(proxy)
+        return False
+
+
 
     def getBsObj(self, url):
         # 获取sku的网页信息
-        resp = requests.get(
-            url,
-            params={
-            },
-            headers={
-                    'User-Agent':'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-                    'Accept':'text/html;q=0.9,*/*;q=0.8',
-                    'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-                },
-            # proxies={
-            #     'http' : '116.255.169.214:16819',
-            # }
-        )
+        resp = self.runRequest(url)
+        if (resp == False):
+            return False
         print('[resp] [code %s]' % (resp.status_code))
         r = resp.text
-        # print(r)
-        # exit()
         return BeautifulSoup(r, 'lxml')
 
