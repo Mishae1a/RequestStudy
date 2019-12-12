@@ -309,7 +309,7 @@ areaList = [
     "ba70ea80",
     "ba80ea90",
     "ba90ea100",
- https://bj.lianjia.com   ",
+    "ba100ea110",
     "ba110ea120",
     "ba120ea130",
     "ba130ea140",
