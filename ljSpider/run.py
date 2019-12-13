@@ -15,6 +15,8 @@ if (args[1] == 'list'):
     import controller.runList
 elif(args[1] == 'detail'):
     import controller.runDetail
+elif(args[1] == 'detailQueue'):
+    import controller.detailQueue
 else:
     print('参数错误 请运行 list detail')
 

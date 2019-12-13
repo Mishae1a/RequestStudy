@@ -4,10 +4,11 @@ import time
 import crawler.LianjiaDetail as LianjiaDetail
 import threading
 from datetime import datetime
+import redis
 
 # 定义计数变量
 exitFlag = 0
-threadNum = 10
+threadNum = 1
 hasInsert = False
 
 ## 初始化爬虫线程
@@ -20,16 +21,21 @@ class myThread (threading.Thread):
         print ("生成线程：" + self.name)
         conn = mysql.connector.connect(**mysqlConfig.config)
         cursor = conn.cursor(dictionary=True)
+        rds = redis.Redis(host='127.0.0.1', port=6379, password='ectouch')
         while 1:
-            r = dealData(cursor, conn)
+            r = dealData(cursor, conn, rds)
             if r == False:
                 break
         print ("销毁线程：" + self.name)
 
-def dealData(cursor, conn):
+def dealData(cursor, conn, rds):
+    
     detailObj = LianjiaDetail.LianjiaDetail()
+    lj_id = rds.lpop('ljDetail')
+    if (lj_id == None):
+        return False
     # Read a single record
-    sql = "select * from lj_transaction WHERE status=1 ORDER BY rand() LIMIT 20"
+    sql = "select * from lj_transaction WHERE lj_id='" + str(lj_id, encoding = "utf-8") + "' LIMIT 1"
     cursor.execute(sql)
     ljList = cursor.fetchall()
     if len(ljList) == 0:
