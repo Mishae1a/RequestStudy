@@ -25,4 +25,16 @@ CREATE TABLE `lj_transaction` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `lj_id` (`lj_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13835 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `zjw_beijing` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `dt` varchar(180) NOT NULL DEFAULT '' COMMENT '日期',
+  `net_number` varchar(255) NOT NULL DEFAULT '' COMMENT '网上签约套数',
+  `net_area` varchar(255) NOT NULL DEFAULT '' COMMENT '网上签约面积',
+  `residence_number` varchar(255) NOT NULL DEFAULT '' COMMENT '住宅签约套数',
+  `residence_area` varchar(255) NOT NULL DEFAULT '' COMMENT '住宅签约面积',
+  PRIMARY KEY (`id`),
+  KEY `dt` (`dt`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

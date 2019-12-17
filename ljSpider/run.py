@@ -17,6 +17,8 @@ elif(args[1] == 'detail'):
     import controller.runDetail
 elif(args[1] == 'detailQueue'):
     import controller.detailQueue
+elif(args[1] == 'zjw'):
+    import controller.zjwBeijing
 else:
     print('参数错误 请运行 list detail')
 
