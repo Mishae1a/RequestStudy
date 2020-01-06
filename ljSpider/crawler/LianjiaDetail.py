@@ -10,8 +10,8 @@ class LianjiaDetail(object):
     def __init__(self):
         pass
 
-    def getUrlData(self, lj_id):
-        url = "https://bj.lianjia.com/chengjiao/" + lj_id + ".html"
+    def getUrlData(self, lj_id, url):
+        # url = "https://bj.lianjia.com/chengjiao/" + lj_id + ".html"
         bsObj = self.getBsObj(url)
         if bsObj == False:
             return False

@@ -6,30 +6,7 @@ import threading
 from datetime import datetime
 import redis
 
-# 定义计数变量
-exitFlag = 0
-threadNum = 1
-hasInsert = False
-
-## 初始化爬虫线程
-class myThread (threading.Thread):
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-    def run(self):
-        print ("生成线程：" + self.name)
-        conn = mysql.connector.connect(**mysqlConfig.config)
-        cursor = conn.cursor(dictionary=True)
-        rds = redis.Redis(host='127.0.0.1', port=6379, password='ectouch')
-        while 1:
-            r = dealData(cursor, conn, rds)
-            if r == False:
-                break
-        print ("销毁线程：" + self.name)
-
 def dealData(cursor, conn, rds):
-    
     detailObj = LianjiaDetail.LianjiaDetail()
     lj_id = rds.lpop('ljDetail')
     if (lj_id == None):
@@ -43,7 +20,8 @@ def dealData(cursor, conn, rds):
     for result in ljList:
         # result = cursor.fetchone()
         # 取详情数据
-        ljDetail = detailObj.getUrlData(result['lj_id'])
+        url = "https://" + result['city_code'] + ".lianjia.com/chengjiao/" + result['lj_id'] + ".html"
+        ljDetail = detailObj.getUrlData(result['lj_id'], url)
         if (ljDetail == False):
             print(result['lj_id'] + ' 获取详情数据失败！')
             return False
@@ -56,27 +34,10 @@ def dealData(cursor, conn, rds):
     return True
     # pass
 
-## 从列表开始 获取队列
-threads = []
-
-# 创建新线程
-i = 1
-while i <= threadNum:
-    thread = myThread(i, 'B-' + str(i))
-    thread.start()
-    threads.append(thread)
-    i += 1
-    time.sleep(1)
-
-# 等待所有线程完成
-for t in threads:
-    t.join()
-print ("销毁主线程")
-
-# now = datetime.now()
-# signTime = now.strftime(r"%m%d%H")
-# print ("%s 扫描结果：%s" % (signTime, hasInsert))
-# if (hasInsert):
-#     smsObj = Sms.Sms()
-#     smsObj.sendMsg(smsConfig.config['mobile'], '时间：' + signTime + '，有新提醒')
-
+conn = mysql.connector.connect(**mysqlConfig.config)
+cursor = conn.cursor(dictionary=True)
+rds = redis.Redis(host='127.0.0.1', port=6379, password='ectouch')
+while 1:
+    r = dealData(cursor, conn, rds)
+    if r == False:
+        break

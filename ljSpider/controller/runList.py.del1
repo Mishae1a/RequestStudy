@@ -104,8 +104,6 @@ def dispatch(page):
     workQueue.put(page)
     queueLock.release()
 
-
-
 # 实际的run方法
 # 将预定义列表 通过判断大列表数量 如果数量大于100页 则分片调度 否则则正常调度请求
 for p in pageConf.listConf:
@@ -121,7 +119,6 @@ for p in pageConf.listConf:
             dispatch(realPage)
     else:
         dispatch(p)
-            
 
 # 等待队列清空
 while not workQueue.empty():

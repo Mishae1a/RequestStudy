@@ -18,6 +18,38 @@ class LianjiaList(object):
         totalNumber = bsObj.find(class_="resultDes").find("span").string
         return (int)(totalNumber)
 
+    def getFirstLevelUrlList(self, url):
+        bsObj = self.getBsObj(url)
+        if bsObj == False:
+            return False
+        # 取关键词总数量 获取结果
+        dlList = bsObj.find(class_="position").find_all('dl')
+        # 取第二个dl
+        dlContainer = dlList[1]
+        urlList = dlContainer.find_all('a')
+        result = []
+        for urlContainer in urlList:
+            result.append(urlContainer['href'])
+        return result
+
+    def getSecondLevelUrlList(self, url):
+        bsObj = self.getBsObj(url)
+        if bsObj == False:
+            return False
+        # 取关键词总数量 获取结果
+        dlList = bsObj.find(class_="position").find_all('dl')
+        # 取第二个dl
+        dlContainer = dlList[1]
+        urlContainer = dlContainer.find('dd').div.find_all('div')
+        if (len(urlContainer) < 2):
+            return False
+        urlContainer = urlContainer[1]
+        urlList = urlContainer.find_all('a')
+        result = []
+        for urlContainer in urlList:
+            result.append(urlContainer['href'])
+        return result
+
     def getUrlData(self, url):
         bsObj = self.getBsObj(url)
         if bsObj == False:
