@@ -34,8 +34,10 @@ def getSecondUrlList(city, url):
     for firstUrl in firstUrlList:
         furl = "https://" + city + ".lianjia.com" + firstUrl
         secondUrl = lianjiaObj.getSecondLevelUrlList(furl)
-        if secondUrl == False:
+        if secondUrl['code'] == 0:
+            secondUrlList = secondUrlList + secondUrl['data']
+        elif secondUrl['code'] == 201:
             secondUrlList.append(firstUrl)
         else:
-            secondUrlList = secondUrlList + secondUrl
+            pass
     return secondUrlList

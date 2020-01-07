@@ -41,14 +41,30 @@ class LianjiaList(object):
         # 取第二个dl
         dlContainer = dlList[1]
         urlContainer = dlContainer.find('dd').div.find_all('div')
+        # 判断dom中的url 是否有chengjiao 没有则没有公布成交房源信息
+        # isExistChengjiao = re.match(r".*成交房源.*", bsObj.prettify())
+        existChengjiaoUrl = urlContainer[0].find_all('a')[0]
+        isExistChengjiao = re.match(r".*chengjiao.*", existChengjiaoUrl.prettify())
+        if (isExistChengjiao == None):
+            return {
+                'code': 500,
+                'data': [],
+            }
+
         if (len(urlContainer) < 2):
-            return False
+            return {
+                'code': 201,
+                'data': []
+            }
         urlContainer = urlContainer[1]
         urlList = urlContainer.find_all('a')
         result = []
         for urlContainer in urlList:
             result.append(urlContainer['href'])
-        return result
+        return {
+            'code': 0,
+            'data': result
+        }
 
     def getUrlData(self, url):
         bsObj = self.getBsObj(url)
